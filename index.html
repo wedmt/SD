@@ -69,14 +69,16 @@
     pointer-events: none; 
   }
 
+  /* Perfect Center Alignment for Date */
   .reveal-content h1 { 
     font-size: 1.8rem; 
     font-weight: 600; 
     letter-spacing: 2px; 
     color: #1a2a6c; 
     line-height: 1.4; 
-    padding-top: 20px;
-    margin: 0; 
+    margin: 0;
+    padding: 0; /* Removed padding to ensure perfect centering */
+    text-align: center;
   }
 
   .year-text { display: block; font-size: 2rem; letter-spacing: 5px; }
@@ -120,9 +122,7 @@
     box-shadow: 0 0 15px white; 
     z-index: 25; 
     pointer-events: none;
-    /* Drawing the infinity path */
     offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
-    /* Centering the path within the heart container */
     left: 50%;
     top: 50%;
     margin-left: -50px; 
@@ -133,12 +133,6 @@
   @keyframes infinityMove {
     from { offset-distance: 0%; }
     to { offset-distance: 100%; }
-  }
-
-  .hide-hint { 
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
   }
 </style>
 </head>
@@ -246,7 +240,7 @@ function handleAction(e) {
   }
   
   const hint = document.getElementById('hint');
-  if(hint) hint.remove(); // Remove immediately upon touch
+  if(hint) hint.remove(); 
 }
 
 gCanvas.addEventListener('mousedown', () => isDrawing = true);
@@ -260,7 +254,6 @@ window.onload = () => {
   drawGlitterHeart();
   animateParticles();
   
-  // Hint disappears after 3 seconds
   setTimeout(() => {
     const hint = document.getElementById('hint');
     if(hint) hint.remove();
