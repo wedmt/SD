@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
@@ -46,7 +46,7 @@
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    justify-content: space-around; 
+    justify-content: space-between; /* Changed to between for better distribution */
     text-align: center; 
     width: 100%;
     height: 100vh;
@@ -55,6 +55,8 @@
     font-family: 'Great Vibes', cursive;
     opacity: 0;
     transition: opacity 1s ease-in;
+    box-sizing: border-box;
+    padding-top: 20px;
   }
 
   .bg-fixed {
@@ -68,8 +70,8 @@
   }
 
   .save-the-date-text { 
-    font-size: 3.5rem; color: #2c3e50; margin: 0; flex: 1; 
-    display: flex; align-items: center; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
+    font-size: 3.5rem; color: #2c3e50; margin: 0; 
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
     pointer-events: none; 
   }
 
@@ -87,7 +89,6 @@
     margin: 0; 
     padding: 0;
     text-align: center; 
-    /* Lowered to 0px for perfect belly-of-the-heart centering */
     transform: translateY(0px); 
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   }
@@ -97,9 +98,20 @@
   #glitterCanvas { position: absolute; top: 0; left: 0; z-index: 10; touch-action: none; cursor: crosshair; }
   #effectCanvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 11; }
 
+  /* FIX: Names area with bottom safety padding */
+  .names-container {
+    width: 100%;
+    padding-bottom: 40px; /* Forces names away from the screen edge/browser bars */
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .names { 
-    font-size: 3.5rem; color: #2c3e50; margin: 0; flex: 0.8; 
-    display: flex; align-items: center; padding-bottom: 20px;
+    font-size: 3.5rem; 
+    color: #2c3e50; 
+    margin: 0; 
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
   }
 
@@ -138,7 +150,9 @@
     <canvas id="effectCanvas" width="350" height="350"></canvas>
   </div>
 
-  <div class="names">Maroun & Tracy</div>
+  <div class="names-container">
+    <div class="names">Maroun & Tracy</div>
+  </div>
 </div>
 
 <script>
@@ -167,7 +181,6 @@ function drawGlitterHeart() {
   }
   gCtx.restore();
 
-  // ONLY REVEAL AFTER BUFFERING
   requestAnimationFrame(() => {
     setTimeout(() => {
       loadingOverlay.style.opacity = "0";
@@ -246,7 +259,6 @@ gCanvas.addEventListener('touchend', () => isDrawing = false);
 gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(e); }, {passive: false});
 
 window.onload = () => {
-  // Use idle time to prepare confetti engine
   if (window.requestIdleCallback) {
     requestIdleCallback(() => {
       confetti({ particleCount: 0 });
@@ -268,12 +280,12 @@ window.onload = () => {
 
   setTimeout(() => {
     confetti({ 
-      particleCount: 80, // Slightly reduced to ensure zero-lag on first fire
+      particleCount: 80, 
       spread: 70, 
       origin: { y: 0.8 }, 
       colors: ['#ffd700', '#d4af37', '#b8860b'] 
     });
-  }, 8500); // Added extra time for buffer safety
+  }, 8500);
 };
 </script>
 </body>
