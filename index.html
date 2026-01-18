@@ -31,16 +31,20 @@
     display: flex; 
     flex-direction: column; 
     align-items: center; 
+    justify-content: space-around; 
     text-align: center; 
     width: 100%;
+    height: 100vh; 
   }
 
   .save-the-date-text { 
     font-family: 'Great Vibes', cursive; 
     font-size: 3.5rem; 
     color: #2c3e50; 
-    margin-top: 50px; /* Lowered "Save the Date" */
-    margin-bottom: 5px; 
+    margin: 0;
+    flex: 1; 
+    display: flex;
+    align-items: center;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
     pointer-events: none; 
   }
@@ -50,6 +54,7 @@
     width: 350px; 
     height: 350px; 
     touch-action: none; 
+    flex: 0 0 auto; 
   }
 
   .heart-deboss, .reveal-content { 
@@ -64,14 +69,13 @@
     pointer-events: none; 
   }
 
-  /* Lowered the Date position inside the heart */
   .reveal-content h1 { 
     font-size: 1.8rem; 
     font-weight: 600; 
     letter-spacing: 2px; 
     color: #1a2a6c; 
     line-height: 1.4; 
-    padding-top: 40px; /* Pushes the date text down */
+    padding-top: 20px;
     margin: 0; 
   }
 
@@ -95,38 +99,60 @@
   }
 
   .names { 
-    margin-top: 10px; 
     font-family: 'Great Vibes', cursive; 
     font-size: 3.5rem; 
     color: #2c3e50; 
+    margin: 0;
+    flex: 1; 
+    display: flex;
+    align-items: center;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
   }
 
+  /* Infinity Movement Hint */
   .circle-hint { 
     position: absolute; 
-    top: 55%; /* Lowered the hint slightly too */
-    left: 50%; 
-    width: 50px; height: 50px; 
-    margin-left: -25px; margin-top: -25px; 
+    width: 40px; 
+    height: 40px; 
     border: 3px solid white; 
     border-radius: 50%; 
-    background: rgba(255, 255, 255, 0.3); 
+    background: rgba(255, 255, 255, 0.4); 
     box-shadow: 0 0 15px white; 
     z-index: 25; 
-    pointer-events: none; 
-    animation: hintAnim 5s ease-in-out infinite; 
+    pointer-events: none;
+    /* Drawing the infinity path */
+    offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
+    /* Centering the path within the heart container */
+    left: 50%;
+    top: 50%;
+    margin-left: -50px; 
+    margin-top: -50px;
+    animation: infinityMove 2s infinite linear;
   }
-  @keyframes hintAnim { 0%, 100% { opacity: 0; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.1); } }
+
+  @keyframes infinityMove {
+    from { offset-distance: 0%; }
+    to { offset-distance: 100%; }
+  }
+
+  .hide-hint { 
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
 </style>
 </head>
 <body>
 
 <div class="main-wrapper">
   <p class="save-the-date-text">Save the Date</p>
+  
   <div class="container">
     <div class="circle-hint" id="hint"></div>
     <div class="heart-deboss">
-      <svg viewBox="0 0 32 32" fill="#ffffff" width="250" opacity="0.5"><path d="M16 28.5L14.1 26.8C7.3 20.6 2.8 16.5 2.8 11.5C2.8 7.4 6 4.2 10.1 4.2C12.4 4.2 14.6 5.3 16 7C17.4 5.3 19.6 4.2 21.9 4.2C26 4.2 29.2 7.4 29.2 11.5C29.2 16.5 24.7 20.6 17.9 26.8L16 28.5Z" /></svg>
+      <svg viewBox="0 0 32 32" fill="#ffffff" width="250" opacity="0.5">
+        <path d="M16 28.5L14.1 26.8C7.3 20.6 2.8 16.5 2.8 11.5C2.8 7.4 6 4.2 10.1 4.2C12.4 4.2 14.6 5.3 16 7C17.4 5.3 19.6 4.2 21.9 4.2C26 4.2 29.2 7.4 29.2 11.5C29.2 16.5 24.7 20.6 17.9 26.8L16 28.5Z" />
+      </svg>
     </div>
     <div class="reveal-content">
       <h1>Aug 07,<br><span class="year-text">2026</span></h1>
@@ -134,6 +160,7 @@
     <canvas id="glitterCanvas" width="350" height="350"></canvas>
     <canvas id="effectCanvas" width="350" height="350"></canvas>
   </div>
+
   <div class="names">Maroun & Tracy</div>
 </div>
 
@@ -218,7 +245,8 @@ function handleAction(e) {
     particles.push(new HeartParticle(x, y));
   }
   
-  document.getElementById('hint').style.display = 'none';
+  const hint = document.getElementById('hint');
+  if(hint) hint.remove(); // Remove immediately upon touch
 }
 
 gCanvas.addEventListener('mousedown', () => isDrawing = true);
@@ -231,6 +259,13 @@ gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(
 window.onload = () => {
   drawGlitterHeart();
   animateParticles();
+  
+  // Hint disappears after 3 seconds
+  setTimeout(() => {
+    const hint = document.getElementById('hint');
+    if(hint) hint.remove();
+  }, 3000);
+
   setTimeout(() => {
     confetti({ 
       particleCount: 100, 
