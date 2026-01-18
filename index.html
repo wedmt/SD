@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
   html, body { 
@@ -14,16 +14,19 @@
     padding: 0; 
     touch-action: none; 
     -webkit-user-select: none; 
+    background-color: #000;
   }
 
-  body { 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    font-family: 'Montserrat', sans-serif; 
+  .bg-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: url('pic.jpg') no-repeat center center;
     background-size: cover;
-    opacity: 0;
+    z-index: -1;
+    opacity: 0; 
     transition: opacity 1s ease-in;
   }
 
@@ -34,11 +37,14 @@
     justify-content: space-around; 
     text-align: center; 
     width: 100%;
-    height: 100vh; 
+    height: 100vh;
+    position: relative;
+    z-index: 1;
+    /* Universal Font Application */
+    font-family: 'Great Vibes', cursive;
   }
 
   .save-the-date-text { 
-    font-family: 'Great Vibes', cursive; 
     font-size: 3.5rem; 
     color: #2c3e50; 
     margin: 0;
@@ -69,21 +75,20 @@
     pointer-events: none; 
   }
 
-  /* Corrected Visual Weight Centering */
+  /* Date styled with Great Vibes */
   .reveal-content h1 { 
-    font-size: 1.8rem; 
-    font-weight: 600; 
-    letter-spacing: 2px; 
+    font-size: 2.5rem; /* Adjusted for cursive size */
+    font-weight: normal; 
     color: #1a2a6c; 
-    line-height: 1.4; 
+    line-height: 1.1; 
     margin: 0;
     padding: 0;
     text-align: center;
-    /* Shifts the text up to account for the heart's visual weight */
     transform: translateY(-15px); 
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   }
 
-  .year-text { display: block; font-size: 2rem; letter-spacing: 5px; }
+  .year-text { display: block; font-size: 2.8rem; }
 
   #glitterCanvas { 
     position: absolute; 
@@ -103,7 +108,6 @@
   }
 
   .names { 
-    font-family: 'Great Vibes', cursive; 
     font-size: 3.5rem; 
     color: #2c3e50; 
     margin: 0;
@@ -127,7 +131,7 @@
     left: 50%;
     top: 50%;
     margin-left: -50px; 
-    margin-top: -65px; /* Shifted hint up as well to match visual center */
+    margin-top: -65px;
     animation: infinityMove 2s infinite linear;
   }
 
@@ -138,6 +142,8 @@
 </style>
 </head>
 <body>
+
+<div class="bg-fixed" id="bgLayer"></div>
 
 <div class="main-wrapper">
   <p class="save-the-date-text">Save the Date</p>
@@ -150,7 +156,7 @@
       </svg>
     </div>
     <div class="reveal-content">
-      <h1>Aug 07,<br><span class="year-text">2026</span></h1>
+      <h1>August 7,<br><span class="year-text">2026</span></h1>
     </div>
     <canvas id="glitterCanvas" width="350" height="350"></canvas>
     <canvas id="effectCanvas" width="350" height="350"></canvas>
@@ -164,6 +170,7 @@ const gCanvas = document.getElementById('glitterCanvas');
 const gCtx = gCanvas.getContext('2d');
 const eCanvas = document.getElementById('effectCanvas');
 const eCtx = eCanvas.getContext('2d');
+const bgLayer = document.getElementById('bgLayer');
 
 let isDrawing = false;
 let particles = [];
@@ -181,7 +188,7 @@ function drawGlitterHeart() {
     gCtx.fillRect(Math.random() * 350, Math.random() * 350, 1.5, 1.5);
   }
   gCtx.restore();
-  document.body.style.opacity = "1";
+  bgLayer.style.opacity = "1"; 
 }
 
 class HeartParticle {
