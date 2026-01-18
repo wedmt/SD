@@ -87,8 +87,8 @@
     margin: 0; 
     padding: 0;
     text-align: center; 
-    /* Offset adjusted from -18px to -8px for perfect visual centering */
-    transform: translateY(-8px); 
+    /* Lowered to 0px for perfect belly-of-the-heart centering */
+    transform: translateY(0px); 
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   }
 
@@ -107,7 +107,7 @@
     position: absolute; width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; 
     background: rgba(255, 255, 255, 0.4); box-shadow: 0 0 15px white; z-index: 25; pointer-events: none;
     offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
-    left: 50%; top: 50%; margin-left: -50px; margin-top: -68px;
+    left: 50%; top: 50%; margin-left: -50px; margin-top: -60px;
     animation: infinityMove 2s infinite linear;
   }
   @keyframes infinityMove { from { offset-distance: 0%; } to { offset-distance: 100%; } }
@@ -167,12 +167,15 @@ function drawGlitterHeart() {
   }
   gCtx.restore();
 
-  setTimeout(() => {
-    loadingOverlay.style.opacity = "0";
-    bgLayer.style.opacity = "1";
-    mainContent.style.opacity = "1";
-    setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
-  }, 500);
+  // ONLY REVEAL AFTER BUFFERING
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      loadingOverlay.style.opacity = "0";
+      bgLayer.style.opacity = "1";
+      mainContent.style.opacity = "1";
+      setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
+    }, 600);
+  });
 }
 
 class HeartParticle {
@@ -243,23 +246,34 @@ gCanvas.addEventListener('touchend', () => isDrawing = false);
 gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(e); }, {passive: false});
 
 window.onload = () => {
-  confetti({ particleCount: 0 });
-  drawGlitterHeart();
-  animateParticles();
+  // Use idle time to prepare confetti engine
+  if (window.requestIdleCallback) {
+    requestIdleCallback(() => {
+      confetti({ particleCount: 0 });
+      drawGlitterHeart();
+      animateParticles();
+    });
+  } else {
+    setTimeout(() => {
+      confetti({ particleCount: 0 });
+      drawGlitterHeart();
+      animateParticles();
+    }, 100);
+  }
   
   setTimeout(() => {
     const hint = document.getElementById('hint');
     if(hint) hint.remove();
-  }, 5000);
+  }, 6000);
 
   setTimeout(() => {
     confetti({ 
-      particleCount: 100, 
+      particleCount: 80, // Slightly reduced to ensure zero-lag on first fire
       spread: 70, 
       origin: { y: 0.8 }, 
       colors: ['#ffd700', '#d4af37', '#b8860b'] 
     });
-  }, 7500);
+  }, 8500); // Added extra time for buffer safety
 };
 </script>
 </body>
