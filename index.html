@@ -47,14 +47,14 @@
     justify-content: space-between; 
     text-align: center; 
     width: 100%;
-    height: 100vh;
+    height: 100dvh; /* Use dynamic viewport height for mobile browsers */
     position: relative;
     z-index: 1;
     font-family: 'Great Vibes', cursive;
     opacity: 0;
     transition: opacity 1s ease-in;
     box-sizing: border-box;
-    padding-top: 20px;
+    padding: 20px 0;
   }
 
   .bg-fixed {
@@ -68,12 +68,21 @@
   }
 
   .save-the-date-text { 
-    font-size: 3.5rem; color: #2c3e50; margin: 0; 
+    font-size: clamp(2.5rem, 8vw, 3.8rem); /* Responsive font scaling */
+    color: #2c3e50; 
+    margin: 0; 
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
     pointer-events: none; 
   }
 
-  .container { position: relative; width: 350px; height: 350px; touch-action: none; flex: 0 0 auto; }
+  /* RESPONSIVE CONTAINER */
+  .container { 
+    position: relative; 
+    width: min(90vw, 400px); /* Scales with screen, maxes at 400px */
+    aspect-ratio: 1 / 1; 
+    touch-action: none; 
+    flex: 0 0 auto; 
+  }
 
   .heart-deboss, .reveal-content { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
@@ -81,25 +90,25 @@
   }
 
   .reveal-content h1 { 
-    font-size: 2.3rem; 
+    font-size: clamp(1.8rem, 6vw, 2.5rem); 
     color: #1a2a6c; 
     line-height: 1.1; 
     margin: 0; 
     padding: 0;
     text-align: center; 
-    transform: translateY(0px); 
+    transform: translateY(5%); 
     text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   }
 
-  .year-text { display: block; font-size: 2.8rem; }
+  .year-text { display: block; font-size: 1.2em; }
 
-  /* PERFORMANCE FIX: tells browser to optimize these layers */
   #glitterCanvas, #effectCanvas { 
     position: absolute; 
     top: 0; 
     left: 0; 
+    width: 100%;
+    height: 100%;
     will-change: transform; 
-    backface-visibility: hidden;
   }
   
   #glitterCanvas { z-index: 10; touch-action: none; cursor: crosshair; }
@@ -107,7 +116,7 @@
 
   .names-container {
     width: 100%;
-    padding-bottom: 40px; 
+    padding-bottom: env(safe-area-inset-bottom, 30px); /* Respects notch/home bar */
     flex: 0 0 auto;
     display: flex;
     justify-content: center;
@@ -115,7 +124,7 @@
   }
 
   .names { 
-    font-size: 3.5rem; 
+    font-size: clamp(2.5rem, 8vw, 3.8rem); 
     color: #2c3e50; 
     margin: 0; 
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
@@ -125,7 +134,7 @@
     position: absolute; width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; 
     background: rgba(255, 255, 255, 0.4); box-shadow: 0 0 15px white; z-index: 25; pointer-events: none;
     offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
-    left: 50%; top: 50%; margin-left: -50px; margin-top: -60px;
+    left: 50%; top: 40%; margin-left: -50px;
     animation: infinityMove 2s infinite linear;
   }
   @keyframes infinityMove { from { offset-distance: 0%; } to { offset-distance: 100%; } }
@@ -142,18 +151,18 @@
 <div class="main-wrapper" id="mainContent">
   <p class="save-the-date-text">Save the Date</p>
   
-  <div class="container">
+  <div class="container" id="heartContainer">
     <div class="circle-hint" id="hint"></div>
     <div class="heart-deboss">
-      <svg viewBox="0 0 32 32" fill="#ffffff" width="250" opacity="0.5">
+      <svg viewBox="0 0 32 32" fill="#ffffff" width="75%" opacity="0.5">
         <path d="M16 28.5L14.1 26.8C7.3 20.6 2.8 16.5 2.8 11.5C2.8 7.4 6 4.2 10.1 4.2C12.4 4.2 14.6 5.3 16 7C17.4 5.3 19.6 4.2 21.9 4.2C26 4.2 29.2 7.4 29.2 11.5C29.2 16.5 24.7 20.6 17.9 26.8L16 28.5Z" />
       </svg>
     </div>
     <div class="reveal-content">
       <h1>August 7,<br><span class="year-text">2026</span></h1>
     </div>
-    <canvas id="glitterCanvas" width="350" height="350"></canvas>
-    <canvas id="effectCanvas" width="350" height="350"></canvas>
+    <canvas id="glitterCanvas"></canvas>
+    <canvas id="effectCanvas"></canvas>
   </div>
 
   <div class="names-container">
@@ -166,43 +175,56 @@ const gCanvas = document.getElementById('glitterCanvas');
 const gCtx = gCanvas.getContext('2d');
 const eCanvas = document.getElementById('effectCanvas');
 const eCtx = eCanvas.getContext('2d');
+const container = document.getElementById('heartContainer');
 const bgLayer = document.getElementById('bgLayer');
 const mainContent = document.getElementById('mainContent');
 const loadingOverlay = document.getElementById('loading-overlay');
 
 let isDrawing = false;
 let particles = [];
+let size = 0;
+
+// Update canvas resolution to match responsive size
+function resize() {
+  size = container.offsetWidth;
+  gCanvas.width = size;
+  gCanvas.height = size;
+  eCanvas.width = size;
+  eCanvas.height = size;
+  drawGlitterHeart();
+}
 
 function drawGlitterHeart() {
+  gCtx.clearRect(0,0,size,size);
   gCtx.save();
-  const path = new Path2D("M175,100 C175,97 170,70 125,70 C65,70 65,145 65,145 C65,180 105,230 175,280 C245,230 285,180 285,145 C285,145 285,70 225,70 C190,70 175,97 175,100");
-  gCtx.fillStyle = '#d4af37'; 
-  gCtx.fill(path);
-  gCtx.clip(path);
-  const colors = ['#ffd700', '#ffec8b', '#b8860b', '#ffffff', '#e6be8a'];
+  // Scaling path to current container size
+  const scale = size / 350;
+  const pathString = "M175,100 C175,97 170,70 125,70 C65,70 65,145 65,145 C65,180 105,230 175,280 C245,230 285,180 285,145 C285,145 285,70 225,70 C190,70 175,97 175,100";
+  const path = new Path2D();
   
-  // PERFORMANCE: Fixed alpha instead of per-particle random alpha
+  // Apply scaling to the heart drawing
+  gCtx.translate(size/2, size/2);
+  gCtx.scale(scale, scale);
+  gCtx.translate(-175, -175);
+  
+  const heartPath = new Path2D(pathString);
+  gCtx.fillStyle = '#d4af37'; 
+  gCtx.fill(heartPath);
+  gCtx.clip(heartPath);
+  
+  const colors = ['#ffd700', '#ffec8b', '#b8860b', '#ffffff', '#e6be8a'];
   gCtx.globalAlpha = 0.8; 
   for (let i = 0; i < 15000; i++) {
     gCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
     gCtx.fillRect(Math.random() * 350, Math.random() * 350, 1.5, 1.5);
   }
   gCtx.restore();
-
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      loadingOverlay.style.opacity = "0";
-      bgLayer.style.opacity = "1";
-      mainContent.style.opacity = "1";
-      setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
-    }, 600);
-  });
 }
 
 class HeartParticle {
   constructor(x, y) {
     this.x = x; this.y = y;
-    this.size = 2;
+    this.size = size * 0.005;
     this.maxSize = Math.random() * 10 + 8;
     this.opacity = 1;
     this.speedY = Math.random() * -1.2 - 0.6;
@@ -251,7 +273,7 @@ function handleAction(e) {
   const y = clientY - rect.top;
 
   gCtx.globalCompositeOperation = 'destination-out';
-  gCtx.beginPath(); gCtx.arc(x, y, 25, 0, Math.PI * 2); gCtx.fill();
+  gCtx.beginPath(); gCtx.arc(x, y, 20, 0, Math.PI * 2); gCtx.fill();
 
   if (Math.random() > 0.85) { 
     particles.push(new HeartParticle(x, y));
@@ -269,14 +291,16 @@ gCanvas.addEventListener('touchend', () => isDrawing = false);
 gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(e); }, {passive: false});
 
 window.onload = () => {
-  // Pre-load confetti logic to prevent first-fire lag
+  resize();
+  animateParticles();
   confetti({ particleCount: 0 });
-  
-  // Start drawing the glitter heart
+
   setTimeout(() => {
-    drawGlitterHeart();
-    animateParticles();
-  }, 300);
+    loadingOverlay.style.opacity = "0";
+    bgLayer.style.opacity = "1";
+    mainContent.style.opacity = "1";
+    setTimeout(() => { loadingOverlay.style.display = "none"; }, 800);
+  }, 1000);
   
   setTimeout(() => {
     const hint = document.getElementById('hint');
@@ -285,13 +309,15 @@ window.onload = () => {
 
   setTimeout(() => {
     confetti({ 
-      particleCount: 60, // Reduced for high performance on blinking screens
+      particleCount: 60, 
       spread: 70, 
       origin: { y: 0.8 }, 
       colors: ['#ffd700', '#d4af37', '#b8860b'] 
     });
-  }, 8500);
+  }, 9000);
 };
+
+window.addEventListener('resize', resize);
 </script>
 </body>
 </html>
