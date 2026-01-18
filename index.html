@@ -80,9 +80,17 @@
     display: flex; justify-content: center; align-items: center; pointer-events: none; 
   }
 
+  /* Updated Date Styling for "August" */
   .reveal-content h1 { 
-    font-size: 2.5rem; color: #1a2a6c; line-height: 1.1; margin: 0; padding: 0;
-    text-align: center; transform: translateY(-15px); text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+    font-size: 2.3rem; /* Slightly reduced to fit longer text elegantly */
+    color: #1a2a6c; 
+    line-height: 1.1; 
+    margin: 0; 
+    padding: 0;
+    text-align: center; 
+    /* Precise visual weight offset for heart shape */
+    transform: translateY(-18px); 
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
   }
 
   .year-text { display: block; font-size: 2.8rem; }
@@ -100,7 +108,7 @@
     position: absolute; width: 40px; height: 40px; border: 3px solid white; border-radius: 50%; 
     background: rgba(255, 255, 255, 0.4); box-shadow: 0 0 15px white; z-index: 25; pointer-events: none;
     offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
-    left: 50%; top: 50%; margin-left: -50px; margin-top: -65px;
+    left: 50%; top: 50%; margin-left: -50px; margin-top: -68px;
     animation: infinityMove 2s infinite linear;
   }
   @keyframes infinityMove { from { offset-distance: 0%; } to { offset-distance: 100%; } }
@@ -153,7 +161,6 @@ function drawGlitterHeart() {
   gCtx.fill(path);
   gCtx.clip(path);
   const colors = ['#ffd700', '#ffec8b', '#b8860b', '#ffffff', '#e6be8a'];
-  // Density reduced to 20,000 for smoother iOS performance
   for (let i = 0; i < 20000; i++) {
     gCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
     gCtx.globalAlpha = Math.random();
@@ -237,9 +244,7 @@ gCanvas.addEventListener('touchend', () => isDrawing = false);
 gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(e); }, {passive: false});
 
 window.onload = () => {
-  // Pre-fire silent confetti to prepare the engine
   confetti({ particleCount: 0 });
-
   drawGlitterHeart();
   animateParticles();
   
