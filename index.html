@@ -14,7 +14,7 @@
     padding: 0; 
     touch-action: none; 
     -webkit-user-select: none; 
-    background-color: #f8f9fa; /* Initial background color before image loads */
+    background-color: #f8f9fa; 
   }
 
   /* LOADING SCREEN OVERLAY */
@@ -41,7 +41,7 @@
 
   @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-  /* MAIN CONTENT INITIAL STATE */
+  /* MAIN CONTENT */
   .main-wrapper { 
     display: flex; 
     flex-direction: column; 
@@ -53,7 +53,6 @@
     position: relative;
     z-index: 1;
     font-family: 'Great Vibes', cursive;
-    /* Hide everything until ready */
     opacity: 0;
     transition: opacity 1s ease-in;
   }
@@ -68,7 +67,6 @@
     transition: opacity 1s ease-in;
   }
 
-  /* UI ELEMENTS */
   .save-the-date-text { 
     font-size: 3.5rem; color: #2c3e50; margin: 0; flex: 1; 
     display: flex; align-items: center; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
@@ -92,9 +90,16 @@
   #glitterCanvas { position: absolute; top: 0; left: 0; z-index: 10; touch-action: none; cursor: crosshair; }
   #effectCanvas { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 11; }
 
+  /* Names adjusted slightly higher to ensure screen visibility */
   .names { 
-    font-size: 3.5rem; color: #2c3e50; margin: 0; flex: 1; 
-    display: flex; align-items: center; text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
+    font-size: 3.5rem; 
+    color: #2c3e50; 
+    margin: 0; 
+    flex: 0.8; /* Reduced flex to lift it up slightly */
+    display: flex; 
+    align-items: center; 
+    padding-bottom: 20px; /* Safe area for mobile browsers */
+    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
   }
 
   .circle-hint { 
@@ -161,7 +166,6 @@ function drawGlitterHeart() {
   }
   gCtx.restore();
 
-  // CONTENT REVEAL: Only show once everything is rendered
   setTimeout(() => {
     loadingOverlay.style.opacity = "0";
     bgLayer.style.opacity = "1";
@@ -244,7 +248,7 @@ window.onload = () => {
   setTimeout(() => {
     const hint = document.getElementById('hint');
     if(hint) hint.remove();
-  }, 5000); // Extended slightly so it doesn't vanish before fade-in completes
+  }, 5000);
 
   setTimeout(() => {
     confetti({ 
@@ -254,286 +258,6 @@ window.onload = () => {
       colors: ['#ffd700', '#d4af37', '#b8860b'] 
     });
   }, 7000);
-};
-</script>
-</body>
-</html><!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<style>
-  html, body { 
-    position: fixed; 
-    overflow: hidden; 
-    width: 100%; 
-    height: 100%; 
-    margin: 0; 
-    padding: 0; 
-    touch-action: none; 
-    -webkit-user-select: none; 
-    background-color: #000;
-  }
-
-  .bg-fixed {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('pic.jpg') no-repeat center center;
-    background-size: cover;
-    z-index: -1;
-    opacity: 0; 
-    transition: opacity 1s ease-in;
-  }
-
-  .main-wrapper { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: space-around; 
-    text-align: center; 
-    width: 100%;
-    height: 100vh;
-    position: relative;
-    z-index: 1;
-    /* Universal Font Application */
-    font-family: 'Great Vibes', cursive;
-  }
-
-  .save-the-date-text { 
-    font-size: 3.5rem; 
-    color: #2c3e50; 
-    margin: 0;
-    flex: 1; 
-    display: flex;
-    align-items: center;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
-    pointer-events: none; 
-  }
-
-  .container { 
-    position: relative; 
-    width: 350px; 
-    height: 350px; 
-    touch-action: none; 
-    flex: 0 0 auto; 
-  }
-
-  .heart-deboss, .reveal-content { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    pointer-events: none; 
-  }
-
-  /* Date styled with Great Vibes */
-  .reveal-content h1 { 
-    font-size: 2.5rem; /* Adjusted for cursive size */
-    font-weight: normal; 
-    color: #1a2a6c; 
-    line-height: 1.1; 
-    margin: 0;
-    padding: 0;
-    text-align: center;
-    transform: translateY(-15px); 
-    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
-  }
-
-  .year-text { display: block; font-size: 2.8rem; }
-
-  #glitterCanvas { 
-    position: absolute; 
-    top: 0; 
-    left: 0; 
-    z-index: 10; 
-    touch-action: none; 
-    cursor: crosshair; 
-  }
-
-  #effectCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 11;
-  }
-
-  .names { 
-    font-size: 3.5rem; 
-    color: #2c3e50; 
-    margin: 0;
-    flex: 1; 
-    display: flex;
-    align-items: center;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8); 
-  }
-
-  .circle-hint { 
-    position: absolute; 
-    width: 40px; 
-    height: 40px; 
-    border: 3px solid white; 
-    border-radius: 50%; 
-    background: rgba(255, 255, 255, 0.4); 
-    box-shadow: 0 0 15px white; 
-    z-index: 25; 
-    pointer-events: none;
-    offset-path: path('M20,20 C20,-10 80,-10 80,20 C80,50 20,50 20,80 C20,110 80,110 80,80 C80,50 20,50 20,20');
-    left: 50%;
-    top: 50%;
-    margin-left: -50px; 
-    margin-top: -65px;
-    animation: infinityMove 2s infinite linear;
-  }
-
-  @keyframes infinityMove {
-    from { offset-distance: 0%; }
-    to { offset-distance: 100%; }
-  }
-</style>
-</head>
-<body>
-
-<div class="bg-fixed" id="bgLayer"></div>
-
-<div class="main-wrapper">
-  <p class="save-the-date-text">Save the Date</p>
-  
-  <div class="container">
-    <div class="circle-hint" id="hint"></div>
-    <div class="heart-deboss">
-      <svg viewBox="0 0 32 32" fill="#ffffff" width="250" opacity="0.5">
-        <path d="M16 28.5L14.1 26.8C7.3 20.6 2.8 16.5 2.8 11.5C2.8 7.4 6 4.2 10.1 4.2C12.4 4.2 14.6 5.3 16 7C17.4 5.3 19.6 4.2 21.9 4.2C26 4.2 29.2 7.4 29.2 11.5C29.2 16.5 24.7 20.6 17.9 26.8L16 28.5Z" />
-      </svg>
-    </div>
-    <div class="reveal-content">
-      <h1>August 7,<br><span class="year-text">2026</span></h1>
-    </div>
-    <canvas id="glitterCanvas" width="350" height="350"></canvas>
-    <canvas id="effectCanvas" width="350" height="350"></canvas>
-  </div>
-
-  <div class="names">Maroun & Tracy</div>
-</div>
-
-<script>
-const gCanvas = document.getElementById('glitterCanvas');
-const gCtx = gCanvas.getContext('2d');
-const eCanvas = document.getElementById('effectCanvas');
-const eCtx = eCanvas.getContext('2d');
-const bgLayer = document.getElementById('bgLayer');
-
-let isDrawing = false;
-let particles = [];
-
-function drawGlitterHeart() {
-  gCtx.save();
-  const path = new Path2D("M175,100 C175,97 170,70 125,70 C65,70 65,145 65,145 C65,180 105,230 175,280 C245,230 285,180 285,145 C285,145 285,70 225,70 C190,70 175,97 175,100");
-  gCtx.fillStyle = '#d4af37'; 
-  gCtx.fill(path);
-  gCtx.clip(path);
-  const colors = ['#ffd700', '#ffec8b', '#b8860b', '#ffffff', '#e6be8a'];
-  for (let i = 0; i < 40000; i++) {
-    gCtx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
-    gCtx.globalAlpha = Math.random();
-    gCtx.fillRect(Math.random() * 350, Math.random() * 350, 1.5, 1.5);
-  }
-  gCtx.restore();
-  bgLayer.style.opacity = "1"; 
-}
-
-class HeartParticle {
-  constructor(x, y) {
-    this.x = x; this.y = y;
-    this.size = 2;
-    this.maxSize = Math.random() * 14 + 10;
-    this.opacity = 1;
-    this.speedY = Math.random() * -1.2 - 0.6;
-    this.speedX = (Math.random() - 0.5) * 1.5;
-    this.color = `rgba(212, 175, 55,`; 
-  }
-  draw() {
-    eCtx.save();
-    eCtx.globalAlpha = this.opacity;
-    eCtx.fillStyle = this.color + this.opacity + ')';
-    eCtx.beginPath();
-    const s = this.size;
-    eCtx.moveTo(this.x, this.y + s * 0.3);
-    eCtx.bezierCurveTo(this.x, this.y, this.x - s/2, this.y, this.x - s/2, this.y + s*0.3);
-    eCtx.bezierCurveTo(this.x - s/2, this.y + s*0.65, this.x, this.y + s*0.8, this.x, this.y + s);
-    eCtx.bezierCurveTo(this.x, this.y + s*0.8, this.x + s/2, this.y + s*0.65, this.x + s/2, this.y + s*0.3);
-    eCtx.bezierCurveTo(this.x + s/2, this.y, this.x, this.y, this.x, this.y + s*0.3);
-    eCtx.fill();
-    eCtx.restore();
-  }
-  update() {
-    this.y += this.speedY;
-    this.x += this.speedX;
-    if (this.size < this.maxSize) this.size += 1.4;
-    this.opacity -= 0.018; 
-  }
-}
-
-function animateParticles() {
-  eCtx.clearRect(0, 0, eCanvas.width, eCanvas.height);
-  particles.forEach((p, i) => {
-    p.update(); p.draw();
-    if (p.opacity <= 0) particles.splice(i, 1);
-  });
-  requestAnimationFrame(animateParticles);
-}
-
-function handleAction(e) {
-  if (!isDrawing) return;
-  const rect = gCanvas.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  const x = clientX - rect.left;
-  const y = clientY - rect.top;
-
-  gCtx.globalCompositeOperation = 'destination-out';
-  gCtx.beginPath(); gCtx.arc(x, y, 25, 0, Math.PI * 2); gCtx.fill();
-
-  if (Math.random() > 0.8) { 
-    particles.push(new HeartParticle(x, y));
-  }
-  
-  const hint = document.getElementById('hint');
-  if(hint) hint.remove(); 
-}
-
-gCanvas.addEventListener('mousedown', () => isDrawing = true);
-window.addEventListener('mouseup', () => isDrawing = false);
-gCanvas.addEventListener('mousemove', handleAction);
-gCanvas.addEventListener('touchstart', (e) => { isDrawing = true; handleAction(e); });
-gCanvas.addEventListener('touchend', () => isDrawing = false);
-gCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); handleAction(e); }, {passive: false});
-
-window.onload = () => {
-  drawGlitterHeart();
-  animateParticles();
-  
-  setTimeout(() => {
-    const hint = document.getElementById('hint');
-    if(hint) hint.remove();
-  }, 3000);
-
-  setTimeout(() => {
-    confetti({ 
-      particleCount: 100, 
-      spread: 70, 
-      origin: { y: 0.8 }, 
-      colors: ['#ffd700', '#d4af37', '#b8860b'] 
-    });
-  }, 6000);
 };
 </script>
 </body>
